@@ -79,6 +79,22 @@ export {
   type ChatMemorySearchHit,
 } from './api/chat-memory';
 
+// ── LLM Config ──
+export {
+  llmConfigApi,
+  type LlmProtocol,
+  type LlmConfigTarget,
+  type BindingMode,
+  type TestConnectionInput,
+  type ConnectionTestResult,
+  type CompatibilityInput,
+  type CompatibilityWarning,
+  type CompatibilityResult,
+  type KnowledgeBindingView,
+  type KnowledgeBindingSetInput,
+  type KnowledgeBindingSetResult,
+} from './api/llm-config';
+
 // ── 共享类型（从 types.ts 透传） ──
 export type {
   MetaEnvelope,

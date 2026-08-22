@@ -1,12 +1,10 @@
 /**
  * SettingsDialog — 全局设置弹窗（从顶栏⚙图标触发）。
  *
- * 当前只有一个 Tab：「权限管理」— 控制资源管理模块的开关
- * （Wiki / Code / Skill / Chat_Memory），防止未稳定使用的模块
- * 被注入内核运行。
- *
- * 后续可在 TABS 数组里追加其他 Tab（如通知、偏好设置等）。
- *
+ * 两个 Tab：
+ *   - 「权限管理」— 控制资源管理模块的开关（Wiki / Code / Skill / Chat_Memory）
+ *   - 「LLM 配置」— Memory/Proxy/Knowledge 的 LLM Url、API Key、model、protocol，
+ *     含连接测试 + 系统兼容性检查（见 components/llm-settings/LlmSettingsPanel.tsx）
  */
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +14,7 @@ import {
   Text,
   Tag,
   Modal,
+  Segment,
 } from 'tea-component';
 import {
   BooksIcon,
@@ -25,6 +24,7 @@ import {
 } from 'tea-icons-react';
 import { userConfigApi, type AssetCapabilityKey } from '@/lib/teamApi';
 import { tea } from '@/lib/tea-bridge';
+import { LlmSettingsPanel } from './llm-settings/LlmSettingsPanel';
 
 // ===== 资源模块 =====
 
@@ -67,11 +67,11 @@ const RESOURCE_MODULES: ResourceModule[] = [
   },
 ];
 
-type SettingsTab = 'permissions';
+type SettingsTab = 'permissions' | 'llm';
 
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
-  const activeTab: SettingsTab = 'permissions';
+  const [activeTab, setActiveTab] = useState<SettingsTab>('permissions');
 
   const [enabled, setEnabled] = useState<Record<string, boolean>>(() => ({
     wiki: true,
@@ -127,6 +127,16 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
   return (
     <Modal visible caption={t('settings.caption')} size="m" onClose={onClose}>
       <Modal.Body>
+      <div style={{ marginBottom: 14 }}>
+        <Segment
+          value={activeTab}
+          onChange={(v) => setActiveTab(v as SettingsTab)}
+          options={([
+            { value: 'permissions', text: t('settings.tab.permissions') },
+            { value: 'llm', text: t('settings.tab.llm') },
+          ])}
+        />
+      </div>
       {activeTab === 'permissions' && (
         <div>
           <div style={{ paddingTop: 4 }}>
@@ -189,6 +199,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       )}
+      {activeTab === 'llm' && <LlmSettingsPanel />}
       </Modal.Body>
     </Modal>
   );

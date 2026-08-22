@@ -11,6 +11,7 @@ import { registerTaskRoutes } from './routes/task.js';
 import { registerAgentOverviewRoutes } from './routes/agent-overview.js';
 import { registerAgentLifecycleRoutes } from './routes/agent-lifecycle.js';
 import { registerKnowledgeRoutes } from './routes/knowledge/index.js';
+import { registerLlmConfigRoutes } from './routes/llm-config/index.js';
 
 const API_PREFIX = '/api/v1';
 
@@ -34,6 +35,8 @@ export function buildPanelApp(deps: PanelDeps): Hono {
   // Agent 生命周期业务路由：/agent/delete-cascade 在 control 层级联清 skill 再 archive
   registerAgentLifecycleRoutes(api, deps);
   registerKnowledgeRoutes(api, deps);
+  // LLM 配置模块：连接测试 / 兼容性评估 / knowledge binding 读写（详见 routes/llm-config/）
+  registerLlmConfigRoutes(api, deps);
   app.route(API_PREFIX, api);
 
   app.onError((err, c) => {
